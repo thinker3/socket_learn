@@ -8,6 +8,9 @@ else:
     port = 9999
 
 server_address = ('127.0.0.1', port)
+server_address = ('', port)
+#server_address = ('0.0.0.0', port) # equal to empty string
+
 httpd = HTTPServer(server_address, SimpleHTTPRequestHandler)
 socketname = httpd.socket.getsockname()
 print "Serving HTTP on", socketname[0], "port", socketname[1], "..."
