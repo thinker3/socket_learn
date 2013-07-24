@@ -1,21 +1,16 @@
 import sys
-import BaseHTTPServer
+from BaseHTTPServer import HTTPServer
 from SimpleHTTPServer import SimpleHTTPRequestHandler
-
-
-HandlerClass = SimpleHTTPRequestHandler
-ServerClass = BaseHTTPServer.HTTPServer
-Protocol = "HTTP/1.0"
 
 if sys.argv[1:]: # slicing can prevent index out of range
     port = int(sys.argv[1])
 else:
-    port = 8888
-    server_address = ('127.0.0.1', port)
+    port = 9999
+server_address = ('127.0.0.1', port)
+server_address = ('', port)
+#server_address = ('0.0.0.0', port) # equal to empty string
 
-    HandlerClass.protocol_version = Protocol
-    httpd = ServerClass(server_address, HandlerClass)
-
-    sa = httpd.socket.getsockname()
-    print "Serving HTTP on", sa[0], "port", sa[1], "..."
-    httpd.serve_forever()
+httpd = HTTPServer(server_address, SimpleHTTPRequestHandler)
+socketname = httpd.socket.getsockname()
+print "Serving HTTP on", socketname[0], "port", socketname[1], "..."
+httpd.serve_forever()
