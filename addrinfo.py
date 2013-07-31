@@ -25,5 +25,10 @@ def hostlist_of(host, port=80):
 #addrinfo_of(netease)
 #addrinfo_of(bank)
 addrinfo_of(twitter, 443)
-print set(hostlist_of(twitter, 443))
-print set(hostlist_of(baidu))
+twitter_ips = list(set(hostlist_of(twitter, 443)))
+baidu_ips = list(set(hostlist_of(baidu)))
+
+print twitter_ips
+print baidu_ips
+print twitter_ips or baidu_ips
+print [''] or baidu_ips
