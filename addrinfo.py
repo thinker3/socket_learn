@@ -14,8 +14,16 @@ def addrinfo_of(host, port=80):
     except Exception as e:
         print e
 
-addrinfo_of(baidu)
+def hostlist_of(host, port=80):
+    x = socket.getaddrinfo(host, port)
+    for one in x:
+        yield one[-1][0]
+
+
+#addrinfo_of(baidu)
 #addrinfo_of(facebook)
 #addrinfo_of(netease)
 #addrinfo_of(bank)
 addrinfo_of(twitter, 443)
+print set(hostlist_of(twitter, 443))
+print set(hostlist_of(baidu))
