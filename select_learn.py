@@ -8,6 +8,7 @@ facebook = ('www.facebook.com', 443)
 bank = ('ibsbjstar.ccb.com.cn', 443)
 twitter = ('twitter.com', 443)
 weibo = ('weibo.com', 80)
+boxun = ('www.boxun.com', 80)
 
 def test(addr):
     try:
@@ -16,7 +17,7 @@ def test(addr):
         readable, writable, exceptional = select.select([sock], [sock], [sock], 9)
         message = "GET / HTTP/1.1\r\n\r\n"
         sock.sendall(message)
-        data = sock.recv(4096)
+        data = sock.recv(2)
         print addr, data
     except socket.timeout:
         print 'time out testing %s:%d' % addr
@@ -35,5 +36,6 @@ test(simpleserver)
 test(goagent)
 test(twitter)
 test(baidu)
+test(boxun)
 test(bank)
 test(facebook)
