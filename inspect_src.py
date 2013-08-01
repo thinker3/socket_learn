@@ -6,6 +6,7 @@ from base.retrospect import get_source_code
 import SimpleHTTPServer
 import BaseHTTPServer
 import SocketServer
+import socket
 
 def print_write_src(obj, name):
     src = get_source_code(obj)
@@ -17,4 +18,5 @@ def print_write_src(obj, name):
     f.close()
 
 #print_write_src(BaseHTTPServer, 'BaseHTTPServer')
-print_write_src(SocketServer, 'SocketServer')
+#print_write_src(SocketServer, 'SocketServer')
+print_write_src(socket.create_connection, 'create_connection')
