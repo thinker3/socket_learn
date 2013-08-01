@@ -19,4 +19,5 @@ def print_write_src(obj, name):
 
 #print_write_src(BaseHTTPServer, 'BaseHTTPServer')
 #print_write_src(SocketServer, 'SocketServer')
-print_write_src(socket.create_connection, 'create_connection')
+#print_write_src(socket.create_connection, 'create_connection')
+print_write_src(socket, 'socket')
