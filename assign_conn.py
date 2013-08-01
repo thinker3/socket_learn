@@ -14,3 +14,10 @@ print socket.create_connection
 _cc = None
 print cc
 
+
+def method(a=None,b=0,c=1):
+    print a, b, c
+
+socket.getaddrinfo = method
+socket.getaddrinfo(1,2)
+
