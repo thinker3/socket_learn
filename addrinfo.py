@@ -31,4 +31,6 @@ baidu_ips = list(set(hostlist_of(baidu)))
 print twitter_ips
 print baidu_ips
 print twitter_ips or baidu_ips
-print [''] or baidu_ips
+print
+print [] or baidu_ips
+print None or baidu_ips
