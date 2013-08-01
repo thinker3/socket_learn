@@ -5,11 +5,11 @@ netease = ('www.163.com', 80)
 twitter = ('twitter.com', 443)
 facebook = ('www.facebook.com', 80)
 bank = ('ibsbjstar.ccb.com.cn', 443)
-def connect_test(host):
+def connect_test(addr):
     try:
         soc = socket.socket(2)
         soc.settimeout(5)
-        err = soc.connect_ex(host)
+        err = soc.connect_ex(addr)
         print err, type(err)
         soc.close()
     except socket.gaierror:
