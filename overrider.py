@@ -1,4 +1,4 @@
-from overrided import aclass
+from overridee import aclass
 
 _aclass_show = aclass.show
 def aclass_show(a, b=0, c=None):
