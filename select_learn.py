@@ -14,8 +14,9 @@ def test(addr):
     try:
         sock = socket.create_connection(addr, 3)
         print sock
-        readable, writable, exceptional = select.select([sock], [sock], [sock], 9)
-        message = "GET / HTTP/1.1\r\n\r\n"
+        readable, writable, exceptional = select.select([sock], [sock], [sock], 3)
+        #message = "GET / HTTP/1.1\r\n\r\n"
+        message = "GET / HTTP/1.0\r\n\r\n"
         sock.sendall(message)
         data = sock.recv(2)
         print addr, data
