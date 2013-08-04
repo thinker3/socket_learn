@@ -12,9 +12,13 @@ if sys.argv[1:] == ['server']:
         s.sendto('Your data was [[%s]], %d bytes' % (data, len(data)), address)
 elif sys.argv[1:] == ['client']:
     print 'Address before sending:', s.getsockname()
-    s.sendto('This is my message', ('127.0.0.1', PORT))
+    server = ('127.0.0.1', PORT)
+    s.sendto('This is my message', server)
     print 'Address after sending', s.getsockname()
     data, address = s.recvfrom(MAX) # overly promiscuous - see text!
+    if not address == server:
+        print 'attacker', address
+        exit() 
     print 'The server', address, 'says', repr(data)
     print 'Address after receiving', s.getsockname()
     s.sendto('This is my message', ('127.0.0.1', PORT))
