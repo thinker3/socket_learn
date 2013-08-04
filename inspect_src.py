@@ -1,4 +1,4 @@
-import sys, ssl
+import sys, ssl, urllib2, httplib
 syspath = sys.path
 syspath.append('/'.join(syspath[0].split('/')[:-1]))
 
@@ -21,4 +21,6 @@ def print_write_src(obj, name):
 #print_write_src(SocketServer, 'SocketServer')
 #print_write_src(socket.create_connection, 'create_connection')
 #print_write_src(socket, 'socket')
-print_write_src(ssl, 'ssl')
+#print_write_src(ssl, 'ssl')
+#print_write_src(urllib2, 'urllib2')
+print_write_src(httplib, 'httplib')
