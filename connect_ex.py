@@ -14,7 +14,7 @@ def connect_test(addr):
         soc.bind(('', 8755))
         print soc.getsockname()
         soc.settimeout(5)
-        err = soc.connect_ex(addr)
+        err = soc.connect_ex(addr) # in ssl module, wrapper module for _ssl
         print soc.getsockname()
         print soc.getpeername() # socket.error: [Errno 107] Transport endpoint is not connected -- for barred sites ??? or frequent access
         soc.close()
