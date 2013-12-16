@@ -1,6 +1,6 @@
 import socket, sys
 
-HOST = '192.168.0.6'
+HOST = '192.168.0.8' # sshqn sshdb
 PORT = 8000 
 
 soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
