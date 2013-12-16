@@ -1,7 +1,7 @@
 import socket, sys
 
 HOST = '192.168.0.6'
-PORT = 1060
+PORT = 8000 
 
 soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 soc.connect((HOST, PORT))

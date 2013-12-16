@@ -1,7 +1,7 @@
 import socket
 
 HOST = ''
-PORT = 1060
+PORT = 8000 
 
 if __name__ == '__main__':
     soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
