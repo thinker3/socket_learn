@@ -21,9 +21,24 @@ def fetch(addr):
             pass
 
 def connect(addr):
+    host, port = addr
+    request = '''
+    CONNECT %s:%s HTTP/1.1
+    User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:26.0) Gecko/20100101 Firefox/26.0
+    Proxy-Connection: keep-alive
+    Connection: keep-alive
+    Host: %s 
+    ''' % (host, port, host)
+    delimiter = '\r\n'
+    def clear_request(request):
+        for one in request.split('\n'):
+            one = one.strip()
+            if one:
+                yield one
+    request = delimiter.join(clear_request(request))
+    request += delimiter * 2
     try:
         sock = socket.create_connection(local, 2)
-        request = 'CONNECT %s:%s HTTP/1.1\r\n\r\n' % addr
         sock.sendall(request)
         data = sock.recv(1024)
         print data

@@ -1,5 +1,5 @@
 #coding=utf8
-import socket, thread, select
+import socket, thread, select, time
 
 __version__ = '0.1.0 Draft 1'
 BUFLEN = 8192
@@ -12,11 +12,11 @@ class ConnectionHandler(object):
         self.client = connection
         self.client_buffer = ''
         self.timeout = timeout
+        # POST http://www.voanews.com/ HTTP/1.1
         self.method, self.path, self.protocol = self.get_base_header()
         if self.method=='CONNECT':
             self.method_CONNECT()
-        elif self.method in ('OPTIONS', 'GET', 'HEAD', 'POST', 'PUT',
-                             'DELETE', 'TRACE'):
+        elif self.method in ('OPTIONS', 'GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'TRACE'):
             self.method_others()
         self.client.close()
         if self.target:
@@ -24,12 +24,12 @@ class ConnectionHandler(object):
 
     def get_base_header(self):
         while 1:
+            time.sleep(0.5)
             self.client_buffer += self.client.recv(BUFLEN)
             end = self.client_buffer.find('\n')
             if end!=-1:
                 break
-        print self.client_buffer[:end]
-        data = (self.client_buffer[:end+1]).split()
+        data = (self.client_buffer[:end+1]).split() # not .split(' ')
         self.client_buffer = self.client_buffer[end+1:]
         return data
 
@@ -41,13 +41,14 @@ class ConnectionHandler(object):
         self._read_write()
 
     def method_others(self):
-        self.path = self.path[7:]
+        #self.path = self.path[7:]
+        self.path = self.path.split('//')[1]
         i = self.path.find('/')
         host = self.path[:i]
         path = self.path[i:]
         self._connect_target(host)
-        self.target.send('%s %s %s\n'%(self.method, path, self.protocol)+
-                         self.client_buffer)
+        request = '%s %s %s\r\n' % (self.method, path, self.protocol) + self.client_buffer
+        self.target.send(request)
         self.client_buffer = ''
         self._read_write()
 
@@ -59,7 +60,7 @@ class ConnectionHandler(object):
         else:
             port = 80
         (soc_family, _, _, _, address) = socket.getaddrinfo(host, port)[0]
-        self.target = socket.socket(soc_family)
+        self.target = socket.socket(soc_family, socket.SOCK_STREAM)
         self.target.connect(address)
 
     def _read_write(self):
@@ -83,6 +84,9 @@ class ConnectionHandler(object):
                         count = 0
             if count == time_out_max:
                 break
+
+def show(s):
+    print [s]
 
 def start_server(host=HOST, port=PORT, IPv6=False, timeout=60,
                   handler=ConnectionHandler):
@@ -109,9 +113,9 @@ def start_server(host=HOST, port=PORT, IPv6=False, timeout=60,
         soc_type=socket.AF_INET6
     else:
         soc_type=socket.AF_INET
-    soc = socket.socket(soc_type)
+    soc = socket.socket(soc_type, socket.SOCK_STREAM)
+    soc.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     soc.bind((host, port))
-    print "Serving on %s:%d" % (host, port)
     soc.listen(0)
     while 1:
         thread.start_new_thread(handler, soc.accept()+(timeout,))
