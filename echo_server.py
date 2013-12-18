@@ -9,13 +9,15 @@ if __name__ == '__main__':
     soc.bind((HOST, PORT))
     soc.listen(1)
     while True:
-        sc, sockname = soc.accept()
-        message = sc.recv(16)
+        client_soc, client_addr = soc.accept()
+        print client_addr 
+        message = client_soc.recv(16)
         a, b = message.split('+')
         try:
             c = sum([int(a), int(b)])
-            c = str(c)
-        except:
+            c = str(c) * 10**6 # socket.error: [Errno 104] Connection reset by peer (when power >= 6), when the client close quickly
+        except Exception as e:
+            print e
             c = 'error'
-        sc.sendall(c)
-        sc.close()
+        client_soc.sendall(c)
+        client_soc.close()
