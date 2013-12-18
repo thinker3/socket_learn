@@ -6,7 +6,7 @@ github = ('github.com', 443)
 twitter = ('twitter.com', 443)
 
 timeout = 1
-buf_size = 1024
+buf_size = 8192 
 delimiter = '\r\n'
 proxy_addr = ('localhost', 8080)
 
@@ -39,8 +39,8 @@ class Fetcher(object):
                 if not temp:
                     break
                 data += temp
-        except:
-            pass
+        except Exception as e:
+            print e
         finally:
             return data
 
