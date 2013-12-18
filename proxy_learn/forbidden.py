@@ -6,6 +6,7 @@ github = ('github.com', 443)
 twitter = ('twitter.com', 443)
 
 timeout = 2
+buf_size = 1024 * 1024
 delimiter = '\r\n'
 proxy_addr = ('localhost', 8080)
 
@@ -25,7 +26,8 @@ class Fetcher(object):
         self.init_request(request)
         try:
             self.sock.sendall(self.request)
-            data = self.sock.recv(1024)
+            time.sleep(2)
+            data = self.sock.recv(buf_size)
             print data
         except Exception as e:
             print e
@@ -41,7 +43,8 @@ class Fetcher(object):
         self.init_request(request)
         try:
             self.sock.sendall(self.request)
-            data = self.sock.recv(1024)
+            time.sleep(2)
+            data = self.sock.recv(buf_size)
             print data
         except Exception as e:
             print e
@@ -70,7 +73,6 @@ def fetch_test(target_addr):
 def connect_test(target_addr):
     browser = Fetcher(target_addr)
     browser.connect()
-    time.sleep(9)
     browser.fetch()
     browser.close()
 
