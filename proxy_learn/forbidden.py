@@ -5,8 +5,8 @@ baidu = ('www.baidu.com', 80)
 github = ('github.com', 443)
 twitter = ('twitter.com', 443)
 
-timeout = 2
-buf_size = 1024 * 1024
+timeout = 1
+buf_size = 1024
 delimiter = '\r\n'
 proxy_addr = ('localhost', 8080)
 
@@ -26,11 +26,23 @@ class Fetcher(object):
         self.init_request(request)
         try:
             self.sock.sendall(self.request)
-            time.sleep(2)
-            data = self.sock.recv(buf_size)
+            data = self.get_data()
             print data
         except Exception as e:
             print e
+
+    def get_data(self):
+        data = ''
+        try:
+            while 1:
+                temp = self.sock.recv(buf_size) # sometimes blocking even no data left, until timeout, strange
+                if not temp:
+                    break
+                data += temp
+        except:
+            pass
+        finally:
+            return data
 
     def connect(self):
         request = '''
@@ -43,8 +55,7 @@ class Fetcher(object):
         self.init_request(request)
         try:
             self.sock.sendall(self.request)
-            time.sleep(2)
-            data = self.sock.recv(buf_size)
+            data = self.get_data()
             print data
         except Exception as e:
             print e
