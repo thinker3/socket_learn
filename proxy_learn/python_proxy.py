@@ -29,26 +29,32 @@ class ConnectionHandler(object):
             end = self.client_buffer.find('\n')
             if end!=-1:
                 break
+        show(self.client_buffer)
         data = (self.client_buffer[:end+1]).split() # not .split(' ')
         self.client_buffer = self.client_buffer[end+1:]
         return data
 
     def method_CONNECT(self):
         self._connect_target(self.path)
-        self.client.send('HTTP/1.1 200 Connection established\n'+
+        self.client.sendall('HTTP/1.1 200 Connection established\n'+
                          'Proxy-agent: %s\n\n'%VERSION)
         self.client_buffer = ''
         self._read_write()
 
     def method_others(self):
         #self.path = self.path[7:]
-        self.path = self.path.split('//')[1]
+        # http://www.voanews.com/
+        self.path = self.path.split('://')[1]
         i = self.path.find('/')
-        host = self.path[:i]
-        path = self.path[i:]
+        if i != -1:
+            host = self.path[:i]
+            path = self.path[i:]
+        else:
+            host = self.path
+            path = '/'
         self._connect_target(host)
         request = '%s %s %s\r\n' % (self.method, path, self.protocol) + self.client_buffer
-        self.target.send(request)
+        self.target.sendall(request)
         self.client_buffer = ''
         self._read_write()
 
@@ -80,13 +86,16 @@ class ConnectionHandler(object):
                     else:
                         out = self.client
                     if data:
-                        out.send(data)
+                        out.sendall(data)
                         count = 0
             if count == time_out_max:
                 break
 
 def show(s):
     print [s]
+    print '-'*30
+    print s
+    print '-'*30
 
 def start_server(host=HOST, port=PORT, IPv6=False, timeout=60,
                   handler=ConnectionHandler):
