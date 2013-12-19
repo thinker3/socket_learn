@@ -1,9 +1,12 @@
 import socket
 
 baidu = ('www.baidu.com', 80)
+bing = ('cn.bing.com', 80)
 src_ip = ''
 port = 9001
-src_addr = (src_ip, port)
+src_addr = (src_ip, port) # source_address for binding
+buf_size = 1024
+timeout = 3
 
 allowed_src_ips = [
         '',
@@ -18,21 +21,38 @@ problematic_src_ips = [
         '192.168.0.34', # socket.error: [Errno 99] Cannot assign requested address
         ]
 
-def test(addr, src_addr):
+def get_data(sock):
+    data = ''
     try:
-        sock = socket.create_connection(addr, 3, src_addr)
+        while 1:
+            temp = sock.recv(buf_size) # if Connection: keep-alive, it blocks until timeout
+            if not temp:
+                break
+            data += temp
+    except Exception as e:
+        print e
+    finally:
+        return data
+
+#message = "GET / HTTP/1.1\r\nHost: %s\r\nUser-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:26.0) Gecko/20100101 Firefox/26.0\r\nConnection: keep-alive\r\n\r\n"
+message = "GET / HTTP/1.1\r\nHost: %s\r\nUser-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:26.0) Gecko/20100101 Firefox/26.0\r\nConnection: Close\r\n\r\n"
+def test(addr, src_addr):
+    global message
+    try:
+        sock = socket.create_connection(addr, timeout, source_address=None) # socket.error: [Errno 98] Address already in use
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) # not working, netstat -na |grep 9001
         print sock.getsockname()
         print sock.getpeername()
         print
-        sock.sendall('GET / HTTP/1.1\r\n\r\n')
-        data = sock.recv(1024)
-        print data
+        message = message % addr[0]
+        sock.send(message)
+        data = get_data(sock)
+        print data[-1000:]
     finally:
         try:
             sock.close()
         except:
             pass
 
-test(baidu, src_addr)
+test(bing, src_addr)
 #test(baidu, None) # invariant local ip, varying ports, such as ('192.168.0.35', 57365)
