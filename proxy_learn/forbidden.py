@@ -5,7 +5,7 @@ baidu = ('www.baidu.com', 80)
 github = ('github.com', 443)
 twitter = ('twitter.com', 443)
 
-timeout = 1
+timeout = 10
 buf_size = 8192 
 delimiter = '\r\n'
 proxy_addr = ('localhost', 8080)
@@ -21,13 +21,13 @@ class Fetcher(object):
         GET http://%s/ HTTP/1.1
         Host: %s
         User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:26.0) Gecko/20100101 Firefox/26.0
-        Connection: keep-alive
+        Connection: Close 
         ''' % (self.host, self.host)
         self.init_request(request)
         try:
             self.sock.sendall(self.request)
             data = self.get_data()
-            print data
+            print data[-1000:]
         except Exception as e:
             print e
 

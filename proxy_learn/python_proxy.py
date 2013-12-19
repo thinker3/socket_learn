@@ -3,6 +3,7 @@ import socket, thread, select, time
 
 __version__ = '0.1.0 Draft 1'
 BUFLEN = 8192
+TIMEOUT = 5
 VERSION = 'Python Proxy/'+__version__
 HOST = 'localhost'
 PORT = 8080
@@ -56,7 +57,7 @@ class ConnectionHandler(object):
         request = '%s %s %s\r\n' % (self.method, path, self.protocol) + self.client_buffer
         self.target.sendall(request)
         self.client_buffer = ''
-        self._read_write()
+        self.my_read_write()
 
     def _connect_target(self, host):
         i = host.find(':')
@@ -68,6 +69,23 @@ class ConnectionHandler(object):
         (soc_family, _, _, _, address) = socket.getaddrinfo(host, port)[0]
         self.target = socket.socket(soc_family, socket.SOCK_STREAM)
         self.target.connect(address)
+
+    def get_data(self, sock):
+        data = ''
+        try:
+            while 1:
+                temp = sock.recv(BUFLEN)
+                if not temp:
+                    break
+                data += temp
+        except Exception as e:
+            print e
+        finally:
+            return data
+
+    def my_read_write(self):
+        data = self.get_data(self.target)
+        self.client.sendall(data)
 
     def _read_write(self):
         time_out_max = self.timeout/3
@@ -97,7 +115,7 @@ def show(s):
     print s
     print '-'*30
 
-def start_server(host=HOST, port=PORT, IPv6=False, timeout=60,
+def start_server(host=HOST, port=PORT, IPv6=False, timeout=TIMEOUT,
                   handler=ConnectionHandler):
     '''
     socket.accept()
