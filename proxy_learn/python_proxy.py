@@ -14,6 +14,7 @@ class ConnectionHandler(object):
         self.client_buffer = ''
         self.timeout = timeout
         # POST http://www.voanews.com/ HTTP/1.1
+        # CONNECT twitter.com:443 HTTP/1.1
         self.method, self.path, self.protocol = self.get_base_header()
         if self.method=='CONNECT':
             self.method_CONNECT()
@@ -22,6 +23,7 @@ class ConnectionHandler(object):
         self.client.close()
         if self.target:
             self.target.close()
+        print 'closed'
 
     def get_base_header(self):
         while 1:
@@ -36,7 +38,7 @@ class ConnectionHandler(object):
         return data
 
     def method_CONNECT(self):
-        self._connect_target(self.path)
+        self._connect_target(self.path) # self.path for instance, twitter.com:443
         self.client.sendall('HTTP/1.1 200 Connection established\n'+
                          'Proxy-agent: %s\n\n'%VERSION)
         self.client_buffer = ''
@@ -66,7 +68,7 @@ class ConnectionHandler(object):
             host = host[:i]
         else:
             port = 80
-        (soc_family, _, _, _, address) = socket.getaddrinfo(host, port)[0]
+        (soc_family, _, _, _, address) = socket.getaddrinfo(host, port)[0] # time consuming
         self.target = socket.socket(soc_family, socket.SOCK_STREAM)
         self.target.connect(address)
 
