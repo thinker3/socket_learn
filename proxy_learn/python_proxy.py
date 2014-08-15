@@ -1,18 +1,25 @@
 #coding=utf8
-import socket, thread, select, time
+
+import time
+import socket
+import thread
+import select
+import threading
 
 __version__ = '0.1.0 Draft 1'
+VERSION = 'Python Proxy/'+__version__
 BUFLEN = 8192
 TIMEOUT = 5
-VERSION = 'Python Proxy/'+__version__
 HOST = 'localhost'
 PORT = 8080
+lock = threading.Lock()
+
 
 class ConnectionHandler(object):
-    def __init__(self, connection, address, timeout):
+    def __init__(self, connection, address):
         self.client = connection
         self.client_buffer = ''
-        self.timeout = timeout
+        self.timeout = TIMEOUT
         # POST http://www.voanews.com/ HTTP/1.1
         # CONNECT twitter.com:443 HTTP/1.1
         self.method, self.path, self.protocol = self.get_base_header()
@@ -23,7 +30,7 @@ class ConnectionHandler(object):
         self.client.close()
         if self.target:
             self.target.close()
-        print 'closed'
+        show('closed')
 
     def get_base_header(self):
         while 1:
@@ -39,8 +46,9 @@ class ConnectionHandler(object):
 
     def method_CONNECT(self):
         self._connect_target(self.path) # self.path for instance, twitter.com:443
-        self.client.sendall('HTTP/1.1 200 Connection established\n'+
-                         'Proxy-agent: %s\n\n'%VERSION)
+        self.client.sendall(
+                'HTTP/1.1 200 Connection established\r\nProxy-agent: %s\r\n\r\n' % VERSION
+                )
         self.client_buffer = ''
         self._read_write()
 
@@ -57,6 +65,7 @@ class ConnectionHandler(object):
             path = '/'
         self._connect_target(host)
         request = '%s %s %s\r\n' % (self.method, path, self.protocol) + self.client_buffer
+        show('[%s]' % request)
         self.target.sendall(request)
         self.client_buffer = ''
         self.my_read_write()
@@ -111,14 +120,14 @@ class ConnectionHandler(object):
             if count == time_out_max:
                 break
 
-def show(s):
-    print [s]
-    print '-'*30
-    print s
-    print '-'*30
 
-def start_server(host=HOST, port=PORT, IPv6=False, timeout=TIMEOUT,
-                  handler=ConnectionHandler):
+def show(msg):
+    lock.acquire()
+    print "%s\r\n" % msg
+    lock.release()
+
+
+def start_server():
     '''
     socket.accept()
 
@@ -135,33 +144,15 @@ def start_server(host=HOST, port=PORT, IPv6=False, timeout=TIMEOUT,
     When the function returns, the thread silently exits. 
     When the function terminates with an unhandled exception, 
     a stack trace is printed and then the thread exits (but other threads continue to run).
-
-    def __init__(self, connection, address, timeout):
     '''
-    if IPv6==True:
-        soc_type=socket.AF_INET6
-    else:
-        soc_type=socket.AF_INET
+    soc_type = socket.AF_INET
     soc = socket.socket(soc_type, socket.SOCK_STREAM)
     soc.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    soc.bind((host, port))
+    soc.bind((HOST, PORT))
     soc.listen(0)
     while 1:
-        thread.start_new_thread(handler, soc.accept()+(timeout,))
+        thread.start_new_thread(ConnectionHandler, soc.accept())
+
 
 if __name__ == '__main__':
     start_server()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
