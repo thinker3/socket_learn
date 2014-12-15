@@ -6,7 +6,7 @@ import socket
 
 buf_size = 4
 host = ''
-port = 8000
+port = 8800
 server_addr = (host, port)
 
 '''
@@ -29,10 +29,12 @@ if __name__ == '__main__':
     # socket.error: [Errno 98] Address already in use
     soc.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     soc.bind(server_addr)
+    print soc.getsockname()
     soc.listen(0)
 
     runnnig = True
     while runnnig:
+        # ctrl+break to KeyboardInterrupt
         client_soc, client_addr = soc.accept()
         print client_addr
         # socket.error: [Errno 104] Connection reset by peer
