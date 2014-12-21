@@ -27,7 +27,7 @@ class Proxy(BaseHTTPServer.BaseHTTPRequestHandler):
         lock.acquire()
         #print args  # ()
         #print kwargs  # {}
-        #print dt.datetime.now(), self.raw_requestline
+        #print '[do_GET]', dt.datetime.now(), self.raw_requestline
         lock.release()
         self.relay_by_requests()
 
@@ -64,16 +64,23 @@ class Proxy(BaseHTTPServer.BaseHTTPRequestHandler):
         shutil.copyfileobj(urllib.urlopen(self.path), self.wfile)
 
     def do_CONNECT(self):
+        # 'https://www.v2ex.com/', for test
+        lock.acquire()
+        print '[do_CONNECT]', dt.datetime.now(), self.raw_requestline
+        lock.release()
         soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
             if self._connect_to(self.path, soc):
-                self.log_request(200)
-                request = "%s 200 Connection established\r\n" % self.protocol_version
-                self.wfile.write(request)
+                #self.log_request(200)
+                msg = "%s 200 Connection established\r\n" % self.protocol_version
+                self.wfile.write(msg)
                 self.wfile.write("Proxy-agent: Test 0.1\r\n")
                 self.wfile.write("\r\n")
                 self._read_write(soc, 300)
+        except socket.error:
+            pass
         finally:
+            print 'over', self.path
             soc.close()
             self.connection.close()
 
@@ -86,6 +93,7 @@ class Proxy(BaseHTTPServer.BaseHTTPRequestHandler):
         try:
             soc.connect(host_port)
         except socket.error, arg:
+            print unicode(arg)
             try:
                 msg = arg[1]
             except:
@@ -102,6 +110,7 @@ class Proxy(BaseHTTPServer.BaseHTTPRequestHandler):
             count += 1
             (ins, _, exs) = select.select(iw, ow, iw, 3)
             if exs:
+                print 'break due to select exceptions'
                 break
             if ins:
                 for i in ins:
@@ -109,25 +118,36 @@ class Proxy(BaseHTTPServer.BaseHTTPRequestHandler):
                         out = self.connection
                     else:
                         out = soc
-                    data = i.recv(8192)
+                    try:
+                        data = i.recv(8192)
+                    except socket.error as e:
+                        print unicode(e)
+                        print i == self.connection
+                        print e.errno == socket.errno.ECONNRESET
+                        raise e
                     if data:
+                        print len(data), i.getsockname(), i.getpeername()
                         out.send(data)
                         count = 0
             else:
                 pass
-                #print "\t" "idle", count
+                #print "\t idle", count
             if count == max_idling:
+                print 'break due to max_idling'
                 break
 
     def do_POST(self):
         lock.acquire()
-        print dt.datetime.now(), self.raw_requestline
+        #print '[do_POST]', dt.datetime.now(), self.raw_requestline
         lock.release()
         content_length = int(self.headers.getheader('content-length', 0))
         post_body = self.rfile.read(content_length)
-        r = requests.post(self.path, data=post_body, headers=self.headers, proxies=self.no_proxies)
-        #self.send_headers(r.headers)
-        self.wfile.write(r.content)
+        try:
+            r = requests.post(self.path, data=post_body, headers=self.headers, proxies=self.no_proxies)
+            #self.send_headers(r.headers)
+            self.wfile.write(r.content)
+        except requests.ConnectionError as e:
+            print unicode(e)
 
 # on Windows, python 2.6
 # AttributeError: 'module' object has no attribute 'fork'

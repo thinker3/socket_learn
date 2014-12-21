@@ -1,5 +1,6 @@
 #coding=utf8
 
+import os
 import sys
 import json
 import requests
@@ -20,6 +21,19 @@ def main():
             url = 'http://httpbin.org/post'
             r = requests.post(url, data=json.dumps(payload), headers=headers, proxies=proxies)
             print r.text
+            return
+        if sys.argv[1] in ['c', 'connect']:
+            url = 'https://www.paypal.com'
+            url = 'https://www.paypal.com/c2/webapps/mpp/home'
+            os.environ['https_proxy'] = proxy
+            output = os.path.expanduser('~/paypal.index.html')
+            cmd = 'wget %s -O %s' % (url, output)  # not -o, which is log
+            os.system(cmd)
+            '''
+            r = requests.get(url, proxies=proxies)
+            print r.status_code
+            print r.headers
+            '''
             return
     #url = 'http://www.baidu.com'
     url = 'http://httpbin.org/get'
