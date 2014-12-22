@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
-import datetime as dt
+import sys
 import urllib
 import socket
 import select
 import shutil
 import threading
+import datetime as dt
 import SocketServer
 import BaseHTTPServer
 import requests
@@ -149,9 +150,11 @@ class Proxy(BaseHTTPServer.BaseHTTPRequestHandler):
         except requests.ConnectionError as e:
             print unicode(e)
 
-# on Windows, python 2.6
-# AttributeError: 'module' object has no attribute 'fork'
-httpd = SocketServer.ForkingTCPServer(server_addr, Proxy)
-#httpd = SocketServer.ThreadingTCPServer(server_addr, Proxy)
+if sys.platform == 'win32':
+    # on Windows
+    # AttributeError: 'module' object has no attribute 'fork'
+    httpd = SocketServer.ThreadingTCPServer(server_addr, Proxy)
+else:
+    httpd = SocketServer.ForkingTCPServer(server_addr, Proxy)
 httpd.allow_reuse_address = True  # socket.error: [Errno 98] Address already in use
 httpd.serve_forever()
