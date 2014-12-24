@@ -11,6 +11,7 @@ proxies = {
     # requests.exceptions.MissingSchema: Proxy URLs must have explicit schemes.
     #'http': 'localhost:8080',
     'http': proxy,
+    'https': proxy,  # needed, but scheme is http, not https, right?
 }
 payload = {'key1': 'value1', 'key2': 'value2'}
 headers = {'content-type': 'application/json'}
@@ -26,6 +27,7 @@ def main():
         if sys.argv[1] in ['c', 'connect']:
             url = 'https://www.paypal.com'
             url = 'https://www.paypal.com/c2/webapps/mpp/home'
+            '''
             os.environ['https_proxy'] = proxy
             output = os.path.join(home, 'paypal.index.html')
             cmd = 'wget %s -O %s' % (url, output)  # not -o, which is log
@@ -36,7 +38,6 @@ def main():
             r = requests.get(url, proxies=proxies)
             print r.status_code
             print r.headers
-            '''
             return
     #url = 'http://www.baidu.com'
     url = 'http://httpbin.org/get'

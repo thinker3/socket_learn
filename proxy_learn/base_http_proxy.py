@@ -28,7 +28,7 @@ class Proxy(BaseHTTPServer.BaseHTTPRequestHandler):
         lock.acquire()
         #print args  # ()
         #print kwargs  # {}
-        #print '[do_GET]', dt.datetime.now(), self.raw_requestline
+        print '[do_GET]', dt.datetime.now(), self.raw_requestline
         lock.release()
         self.relay_by_requests()
 
@@ -139,7 +139,7 @@ class Proxy(BaseHTTPServer.BaseHTTPRequestHandler):
 
     def do_POST(self):
         lock.acquire()
-        #print '[do_POST]', dt.datetime.now(), self.raw_requestline
+        print '[do_POST]', dt.datetime.now(), self.raw_requestline
         lock.release()
         content_length = int(self.headers.getheader('content-length', 0))
         post_body = self.rfile.read(content_length)
