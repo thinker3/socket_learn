@@ -24,6 +24,7 @@ def get_msg(soc, buf_size):
         msg += temp
     return msg
 
+
 if __name__ == '__main__':
     soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     # socket.error: [Errno 98] Address already in use
