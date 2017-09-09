@@ -2,15 +2,21 @@
 # -*- coding: utf-8 -*-
 
 import socket
+from utils.common import get_conn_status
 
 HOST = 'localhost'
-PORT = 1060
+PORT = 6060
 
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.connect((HOST, PORT))
-print 'Client has been assigned socket name', s.getsockname()
-s.sendall('Hi there, server')
-reply = s.recv(16)
-print 'The server said', repr(reply)
-s.close()
-print
+client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+client.connect((HOST, PORT))
+print 'Client has been assigned socket name', client.getsockname()
+fileno = client.fileno()
+client.sendall('Hi there, server')
+print get_conn_status(fileno)
+while True:
+    reply = client.recv(16)
+    if not reply:
+        client.close()
+        break
+    print 'The server said', repr(reply)
+print '*' * 50
