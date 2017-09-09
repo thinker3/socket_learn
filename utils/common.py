@@ -66,3 +66,18 @@ def get_conn_status(fileno):
         match = matches[0]
         status = match.status
         return status
+
+
+def get_data(sock, buf_size=4096):
+    data = []
+    while True:
+        try:
+            temp = sock.recv(buf_size)
+        except (KeyboardInterrupt, socket.error, socket.timeout) as e:
+            print type(e), e
+            break
+        if not temp:
+            break
+        data.append(temp)
+    data = ''.join(data)
+    return data

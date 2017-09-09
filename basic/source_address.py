@@ -9,6 +9,18 @@ from utils.common import (
 zero = ('0.0.0.0', 9001)
 empty = ('', 9001)
 timeout = 3
+allowed_src_ips = [
+    '',
+    '0.0.0.0',
+    '127.0.0.0',
+    '192.168.0.0',
+    '192.168.0.35',
+]
+
+problematic_src_ips = [
+    '127.0.0.1',  # socket.error: [Errno 22] Invalid argument
+    '192.168.0.34',  # socket.error: [Errno 99] Cannot assign requested address
+]
 
 
 def test(source_address):
@@ -27,11 +39,11 @@ def test(source_address):
     except socket.error as e:
         print type(e), e
     finally:
-        try:
-            if sock:
+        if sock:
+            try:
                 sock.close()
-        except Exception as e:
-            print e
+            except Exception as e:
+                print type(e), e
 
 
 if __name__ == '__main__':
