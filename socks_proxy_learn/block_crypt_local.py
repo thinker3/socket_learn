@@ -71,6 +71,7 @@ class Socket5Handler(SocketServer.BaseRequestHandler):
 class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
     allow_reuse_address = True
 
+
 if __name__ == "__main__":
     server = ThreadedTCPServer(utils.config.local_binding_address, Socket5Handler)
     utils.logging.info('Server running at %s ...' % str(utils.config.local_binding_address))

@@ -150,6 +150,7 @@ class Proxy(BaseHTTPServer.BaseHTTPRequestHandler):
         except requests.ConnectionError as e:
             print unicode(e)
 
+
 if sys.platform == 'win32':
     # on Windows
     # AttributeError: 'module' object has no attribute 'fork'

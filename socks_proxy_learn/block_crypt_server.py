@@ -47,6 +47,7 @@ class LightHandler(SocketServer.BaseRequestHandler):
 class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
     allow_reuse_address = True
 
+
 if __name__ == "__main__":
     server = ThreadedTCPServer(utils.config.vps_binding_address, LightHandler)
     utils.logging.info('Server running at %s ...' % str(utils.config.vps_binding_address))

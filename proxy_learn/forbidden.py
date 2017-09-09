@@ -1,4 +1,7 @@
-import socket, time
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import socket
 
 news = ('news.163.com', 80)
 baidu = ('www.baidu.com', 80)
@@ -6,11 +9,12 @@ github = ('github.com', 443)
 twitter = ('twitter.com', 443)
 digitalocean = ('cloud.digitalocean.com', 443)
 
-timeout = 100 # for bad network service
-buf_size = 8192 
+timeout = 100  # for bad network service
+buf_size = 8192
 delimiter = '\r\n'
 proxy_addr = ('localhost', 8080)
 django_learn = ('localhost', 9010)
+
 
 class Fetcher(object):
     def __init__(self, target_addr):
@@ -89,38 +93,26 @@ class Fetcher(object):
         except:
             pass
 
+
 def fetch_test(target_addr):
     browser = Fetcher(target_addr)
     browser.fetch()
     browser.close()
+
 
 def ajax_fetch_test():
     browser = Fetcher(django_learn)
     browser.ajax_fetch()
     browser.close()
 
+
 def connect_test(target_addr):
     browser = Fetcher(target_addr)
     browser.connect()
     browser.close()
 
+
 if __name__ == '__main__':
     #fetch_test(baidu)
     ajax_fetch_test()
     #connect_test(digitalocean)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
