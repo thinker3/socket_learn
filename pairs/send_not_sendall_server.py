@@ -11,6 +11,14 @@ server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 server.bind((HOST, PORT))
 server.listen(0)
 
+
+def count(data):
+    length = 0
+    for one in data:
+        length += len(one)
+    return length
+
+
 while True:
     try:
         sc, client_addr = server.accept()
@@ -23,9 +31,6 @@ while True:
         if not temp:
             break
         data.append(temp)
-    length = 0
-    for one in data:
-        length += len(one)
-    print length
+    print count(data)
     sc.close()
     print '*' * 50
