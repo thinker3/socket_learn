@@ -18,6 +18,10 @@ file_name_content_separator = '\r\n'
 file_content_crypt_block_separator = '__|__'
 
 
+def separate():
+    print '-' * 100
+
+
 def encrypt(data):
     return simplecrypt.encrypt(key, data)
 
