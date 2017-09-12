@@ -34,7 +34,7 @@ for client in clients:
     except socket.error as e:
         # socket.error: [Errno 35] Resource temporarily unavailable
         print type(e), e
-        print get_conn_status(client.fileno())
+        print get_conn_status(client)
         # can not catch that bad status
         print client.recv(1024)
 __import__('ipdb').set_trace()

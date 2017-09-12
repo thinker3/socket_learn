@@ -59,12 +59,17 @@ def get_tcp_info(sock):
     return x
 
 
-def get_conn_status(fileno):
+def get_conn_status(sock):
+    try:
+        fileno = sock.fileno()
+    except socket.error as e:
+        print type(e), e
+        return 'no fileno'
     proc = psutil.Process()
     connections = proc.connections()
     matches = [x for x in connections if x.fd == fileno]
     if not matches:
-        status = None
+        return 'not found'
     else:
         assert len(matches) == 1
         match = matches[0]

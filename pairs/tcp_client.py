@@ -10,9 +10,8 @@ PORT = 6060
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.connect((HOST, PORT))
 print 'Client has been assigned socket name', client.getsockname()
-fileno = client.fileno()
 client.sendall('Hi there, server')
-print get_conn_status(fileno)
+print get_conn_status(client)
 while True:
     reply = client.recv(16)
     if not reply:

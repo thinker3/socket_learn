@@ -8,12 +8,11 @@ HOST = ''
 PORT = 6060
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_fileno = server.fileno()
 server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 server.bind((HOST, PORT))
-print get_conn_status(server_fileno)  # CLOSE
+print get_conn_status(server)  # CLOSE
 server.listen(1)
-print get_conn_status(server_fileno)  # LISTEN
+print get_conn_status(server)  # LISTEN
 
 while True:
     print 'Listening at', server.getsockname()
@@ -22,13 +21,12 @@ while True:
     except KeyboardInterrupt:
         server.close()
         break
-    client_fileno = sc.fileno()
     print 'We have accepted a connection from', client_addr
     print 'Socket connects', sc.getsockname(), 'and', sc.getpeername()
     message = sc.recv(16)
     print 'The incoming message says', repr(message)
     sc.send('Hello')
     sc.sendall('Farewell, client')
-    print get_conn_status(client_fileno)
+    print get_conn_status(sc)
     sc.close()
     print '*' * 50
